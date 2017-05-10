@@ -1,6 +1,5 @@
 import React,{Component} from 'react';
 import {styles} from '../styles/Main';
-
 import {
     Text,
     View,
@@ -11,7 +10,7 @@ import {
     TouchableHighlight, //按下时，封装的视图的不透明度会降低(只支持一个子节点)
 } from 'react-native';
 
-const REQUST_URL = 'https://api.douban.com/v2/movie/top250'; //获取排行前25的电影数据
+
 
 export default class ChinaMovie extends Component {
     constructor(props) {
@@ -22,10 +21,12 @@ export default class ChinaMovie extends Component {
             }),
             loaded:false,
         }
-        this.fetchData();
     }
-
-    fetchData(){
+    componentDidMount(){
+      const REQUST_URL = 'https://api.douban.com/v2/movie/top250'; //获取排行前25的电影数据
+      this.fetchData(REQUST_URL);
+    }
+    fetchData(REQUST_URL){
       fetch(REQUST_URL)
       .then(response => response.json())
       .then(responseJson => {
@@ -37,10 +38,14 @@ export default class ChinaMovie extends Component {
       })
       .done();
     }
+    toChinaMovieDetail(movie){
+      const { navigate } = this.props.navigation;
+      navigate('ChinaMovieDetail',{MoviesInfo:movie});
+    }
     renderMovieList(movie){
       return (
       <TouchableHighlight underlayColor="rgba(34,26,38,0.1)" onPress={()=>{
-          console.log(movie.title);
+        this.toChinaMovieDetail(movie);
       }}>
         <View style={styles.item}>
           <View style={styles.itemImage}>
@@ -58,16 +63,16 @@ export default class ChinaMovie extends Component {
     render() {
         if (!this.state.loaded){
           return (
-            <View>
-                <View>
+            <View style={styles.container}>
+                <View style={styles.loading}>
                   <ActivityIndicator size="large" color="#6435c9"/>
                 </View>
             </View>
           )
         }
         return (
-            <View style={{flex:1}}>
-                <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)} style={{flex:1,backgroundColor:'yellow'}} />
+            <View style={styles.container}>
+                <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}/>
             </View>
         );
     }

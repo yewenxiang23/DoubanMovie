@@ -10,8 +10,6 @@ import {
     TouchableHighlight, //按下时，封装的视图的不透明度会降低(只支持一个子节点)
 } from 'react-native';
 
-const REQUST_URL = 'https://api.douban.com/v2/movie/top250'; //获取排行前25的电影数据
-
 export default class USAMovie extends Component {
     constructor(props) {
         super(props);
@@ -21,10 +19,12 @@ export default class USAMovie extends Component {
             }),
             loaded:false
         }
-        this.fetchData();
     }
-
-    fetchData(){
+    componentDidMount(){
+      const REQUST_URL = 'https://api.douban.com/v2/movie/us_box';
+      this.fetchData(REQUST_URL);
+    }
+    fetchData(REQUST_URL){
       fetch(REQUST_URL)
       .then(response => response.json())
       .then(responseJson => {
@@ -36,19 +36,23 @@ export default class USAMovie extends Component {
       })
       .done();
     }
+    toUSAMovieDetail(movie){
+      const { navigate } = this.props.navigation;
+      navigate('USAMovieDetail',{USAMoviesInfo:movie});
+    }
     renderMovieList(movie){
       return (
       <TouchableHighlight underlayColor="rgba(34,26,38,0.1)" onPress={()=>{
-          console.log(movie.title);
+          this.toUSAMovieDetail(movie);
       }}>
         <View style={styles.item}>
           <View style={styles.itemImage}>
-            <Image source={{uri:movie.images.large}} style={styles.image}/>
+            <Image source={{uri:movie.subject.images.large}} style={styles.image}/>
           </View>
           <View style={styles.itemContent}>
-            <Text style={styles.itemHeader}>{movie.title}</Text>
-            <Text style={styles.itemMeta}>{movie.original_title} ({movie.year})</Text>
-            <Text style={styles.redText}>{movie.rating.average}</Text>
+            <Text style={styles.itemHeader}>{movie.subject.title}</Text>
+            <Text style={styles.itemMeta}>{movie.subject.original_title} ({movie.subject.year})</Text>
+            <Text style={styles.redText}>{movie.subject.rating.average}</Text>
           </View>
         </View>
       </TouchableHighlight>
@@ -57,15 +61,15 @@ export default class USAMovie extends Component {
     render() {
         if (!this.state.loaded){
           return (
-            <View>
-                <View>
+            <View style={styles.container}>
+                <View style={styles.loading}>
                   <ActivityIndicator size="large" color="#6435c9"/>
                 </View>
             </View>
           )
         }
         return (
-            <View>
+            <View style={styles.container}>
                 <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}/>
             </View>
         );
