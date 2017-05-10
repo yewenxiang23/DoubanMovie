@@ -29,6 +29,9 @@ class SearchResult extends Component{
     //   passProps:{movie}
     // })
   }
+  componentWillMount(){
+    this.setState({movies:this.state.movies})
+  }
   renderMovieList(movie){
     return (
       <TouchableHighlight underlayColor="rgba(34,26,38,0.1)" onPress={()=>{
@@ -48,7 +51,6 @@ class SearchResult extends Component{
     )
   }
   render(){
-    console.log(this.props.navigation.state.params.results)
     return (
       <View style={styles.container}>
         <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}/>

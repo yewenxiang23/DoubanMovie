@@ -38,7 +38,7 @@ class SearchForm extends React.Component {
       <View style={styles.container}>
         <View style={{paddingTop:7,paddingLeft:7,paddingRight:7,borderColor:'rgba(100,53,201,.1)',borderBottomWidth:1}}>
           <TextInput
-            style={{height:50}}
+            style={{height:50,padding:0}}
             placeholder="搜索..."
             placeholderTextColor="#6435c9"
             // autoFocus={true} 文本框默认会选中
@@ -53,6 +53,7 @@ class SearchForm extends React.Component {
                 query
               });
             }}
+            underlineColorAndroid="transparent"
             onSubmitEditing={this.fetchData.bind(this)}
           />
           {IsShowActivityIndicator}

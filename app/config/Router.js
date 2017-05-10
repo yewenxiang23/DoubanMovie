@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image} from "react-native";
-import {TabNavigator, StackNavigator} from 'react-navigation';
+import {TabNavigator, StackNavigator,TabBarBottom} from 'react-navigation';
 import ChinaMovie from '../screens/ChinaMovie';
 import ChinaMovieDetail from '../screens/ChinaMovieDetail';
 import USAMovie from '../screens/USAMovie';
@@ -103,7 +103,7 @@ export const Tabs = TabNavigator({
                     uri: icon
                 }} style={{
                     width: 100,
-                    height: 100
+                    height: 100,
                 }}/>
             }
         }
@@ -127,14 +127,23 @@ export const Tabs = TabNavigator({
     }
 }, {
     tabBarPosition: 'bottom',
-    swipeEnabled: true,
+    lazy:true,
+    swipeEnabled: false,  //是否滑动切换
     tabBarOptions: {
+        // tabBarComponent: TabBarBottom,
         showLabel: false,
+        showIcon:true,
         activeTintColor: 'yellow',
+        iconStyle:{
+          width:50,
+          height:50,
+          top:-15
+        },
         style: {
             height: 48.5,
             borderTopWidth: 1,
-            borderTopColor: '#ccc'
+            borderTopColor: '#ccc',
+            backgroundColor:'white'
         }
     }
 })
