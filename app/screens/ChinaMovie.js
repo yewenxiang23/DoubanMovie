@@ -9,6 +9,7 @@ import {
     StatusBar,
     ActivityIndicator,  //加载时的转动圆圈
     TouchableHighlight, //按下时，封装的视图的不透明度会降低(只支持一个子节点)
+    RefreshControl,
 } from 'react-native';
 
 export default class ChinaMovie extends Component {
@@ -16,11 +17,13 @@ export default class ChinaMovie extends Component {
         super(props);
         this.state = {
             movies: new ListView.DataSource({
-              rowHasChanged:(row1,row2) => row1 !== row2
+              rowHasChanged:(row1,row2) => row1 !== row2,
             }),
-            loaded:false,
-            isLoadingTail:false,
+            loaded:false,      //页面初次载入状态
+            isLoadingTail:false, //上拉刷新状态
             num:5, //获取电影条数，初始值为5
+            count:0, //返回的电影条目总数
+            isRefreshing:true, //下拉刷新状态
         }
     }
     componentDidMount(){
@@ -41,9 +44,11 @@ export default class ChinaMovie extends Component {
             //ListView的数据源，我们要把数据处理一下，
             loaded:true,
             num:that.state.num !== 25?that.state.num+5:that.state.num,
-            isLoadingTail:false
+            isLoadingTail:false,
+            count:responseJson.count,
+            isRefreshing:false
           });
-        },2000)
+        },1000)
       })
       .catch((error) => {
         this.setState({
@@ -54,8 +59,7 @@ export default class ChinaMovie extends Component {
       .done();
     }
     _hasMore(){
-      let num = Object.keys(this.state.movies)
-      return num.length !== 26
+      return this.state.count !== 25
     }
     _fetchMoreData(){
       if(!this._hasMore() || this.state.isLoadingTail){
@@ -74,6 +78,12 @@ export default class ChinaMovie extends Component {
       return (
         <ActivityIndicator size="small" color="#6435c9"/>
       )
+    }
+    _onRefresh(){
+      if(!this._hasMore() || this.state.isRefreshing){
+        return
+      }
+      this.fetchData();
     }
     toChinaMovieDetail(movie){
       const { navigate } = this.props.navigation;
@@ -98,7 +108,6 @@ export default class ChinaMovie extends Component {
       )
     }
     render() {
-      console.log(this.state.movies.length);
         if (!this.state.loaded){
           return (
             <View style={styles.container}>
@@ -115,8 +124,20 @@ export default class ChinaMovie extends Component {
                 <ListView
                   dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}
                   onEndReached={this._fetchMoreData.bind(this)} //当所有的数据都已经渲染过，并且列表被滚动到距离最底部不足onEndReachedThreshold个像素的距离时调用。
+                  refreshControl={
+                    <RefreshControl
+                       refreshing={this.state.isRefreshing}
+                       onRefresh={this._onRefresh.bind(this)}
+                       tintColor="#4c4400"
+                       title="拼命加载中"
+                       titleColor="#4c4400"
+                       colors={['#ff0000', '#00ff00', '#0000ff']}
+                       progressBackgroundColor="#ffff00"
+                     />
+                  }
                   onEndReachedThreshold={20}
                   renderFooter={this._renderFooter.bind(this)}
+                  showsVerticalScrollIndicator={false}//是否显示滚动条
                 />
             </View>
         );

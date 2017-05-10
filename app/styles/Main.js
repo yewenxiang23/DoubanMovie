@@ -1,5 +1,12 @@
 import {StyleSheet} from 'react-native';
 export const styles = StyleSheet.create({
+  loadingMore:{
+    marginVertical:20
+  },
+  loadingText:{
+    color:'#777',
+    textAlign:'center'
+  },
     itemText: {
         fontSize: 14,
         fontFamily: 'Helvetica Neue',
