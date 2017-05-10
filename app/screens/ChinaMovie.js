@@ -11,8 +11,6 @@ import {
     TouchableHighlight, //按下时，封装的视图的不透明度会降低(只支持一个子节点)
 } from 'react-native';
 
-
-
 export default class ChinaMovie extends Component {
     constructor(props) {
         super(props);
@@ -21,23 +19,61 @@ export default class ChinaMovie extends Component {
               rowHasChanged:(row1,row2) => row1 !== row2
             }),
             loaded:false,
+            isLoadingTail:false,
+            num:5, //获取电影条数，初始值为5
         }
     }
     componentDidMount(){
-      const REQUST_URL = 'https://api.douban.com/v2/movie/top250'; //获取排行前25的电影数据
-      this.fetchData(REQUST_URL);
+      this.fetchData();
     }
-    fetchData(REQUST_URL){
+    fetchData(){
+      let that = this;
+      this.setState({
+        isLoadingTail:true
+      })
+      const REQUST_URL = `https://api.douban.com/v2/movie/top250?count=${this.state.num}`; //获取排行前25的电影数据
       fetch(REQUST_URL)
       .then(response => response.json())
       .then(responseJson => {
+        setTimeout(()=>{
+          that.setState({
+            movies:that.state.movies.cloneWithRows(responseJson.subjects),
+            //ListView的数据源，我们要把数据处理一下，
+            loaded:true,
+            num:that.state.num !== 25?that.state.num+5:that.state.num,
+            isLoadingTail:false
+          });
+        },2000)
+      })
+      .catch((error) => {
         this.setState({
-          movies:this.state.movies.cloneWithRows(responseJson.subjects),
-                  //ListView的数据源，我们要把数据处理一下，
-          loaded:true,
-        });
+          isLoadingTail:false
+        })
+        console.warn(error);
       })
       .done();
+    }
+    _hasMore(){
+      let num = Object.keys(this.state.movies)
+      return num.length !== 26
+    }
+    _fetchMoreData(){
+      if(!this._hasMore() || this.state.isLoadingTail){
+        return
+      }
+      this.fetchData();
+    }
+    _renderFooter(){
+      if(!this._hasMore()){
+        return (
+          <View style={styles.loadingMore}>
+            <Text style={styles.loadingText}>没有更多了</Text>
+          </View>
+        )
+      }
+      return (
+        <ActivityIndicator size="small" color="#6435c9"/>
+      )
     }
     toChinaMovieDetail(movie){
       const { navigate } = this.props.navigation;
@@ -62,6 +98,7 @@ export default class ChinaMovie extends Component {
       )
     }
     render() {
+      console.log(this.state.movies.length);
         if (!this.state.loaded){
           return (
             <View style={styles.container}>
@@ -75,7 +112,12 @@ export default class ChinaMovie extends Component {
         return (
             <View style={styles.container}>
                 <StatusBar backgroundColor='#4659bf'/>
-                <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}/>
+                <ListView
+                  dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}
+                  onEndReached={this._fetchMoreData.bind(this)} //当所有的数据都已经渲染过，并且列表被滚动到距离最底部不足onEndReachedThreshold个像素的距离时调用。
+                  onEndReachedThreshold={20}
+                  renderFooter={this._renderFooter.bind(this)}
+                />
             </View>
         );
     }
