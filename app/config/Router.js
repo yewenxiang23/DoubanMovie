@@ -5,6 +5,8 @@ import ChinaMovie from '../screens/ChinaMovie';
 import ChinaMovieDetail from '../screens/ChinaMovieDetail';
 import USAMovie from '../screens/USAMovie';
 import USAMovieDetail from '../screens/USAMovieDetail';
+import SearchFrom from '../screens/SearchFrom';
+import SearchResult from '../screens/SearchResult';
 import {icons} from '../icons/Icons';
 
 const ChinaMovieRouter = StackNavigator({
@@ -21,25 +23,54 @@ const ChinaMovieRouter = StackNavigator({
         }
     },
     ChinaMovieDetail: {
-        screen: ChinaMovieDetail,
+        screen: ChinaMovieDetail
     }
 })
 
 const USAMovieRouter = StackNavigator({
-  USAMovie:{
-    screen:USAMovie,
+    USAMovie: {
+        screen: USAMovie,
+        navigationOptions: {
+            title: '北美电影',
+            headerTintColor: '#4c4400',
+            headerStyle: {
+                backgroundColor: '#fff',
+                borderBottomWidth: 1,
+                borderBottomColor: '#c1ced4'
+            }
+        }
+    },
+    USAMovieDetail: {
+        screen: USAMovieDetail
+    }
+})
+
+const SearchFormRouter = StackNavigator({
+  SearchFrom:{
+    screen:SearchFrom,
     navigationOptions:{
-      title:'北美电影',
+      title:'电影搜索',
       headerTintColor:'#4c4400',
       headerStyle:{
-        backgroundColor:'#fff',
-        borderBottomWidth:1,
-        borderBottomColor:'#c1ced4'
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#c1ced4'
       }
     }
   },
-  USAMovieDetail:{
-    screen:USAMovieDetail,
+  SearchResult:{
+    screen:SearchResult,
+    navigationOptions:{
+      headerTintColor:'#4c4400',
+      headerStyle:{
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#c1ced4'
+      }
+    }
+  },
+  ChinaMovieDetail: {
+      screen: ChinaMovieDetail
   }
 })
 
@@ -74,6 +105,23 @@ export const Tabs = TabNavigator({
                     width: 100,
                     height: 100
                 }}/>
+            }
+        }
+    },
+    Search: {
+        screen: SearchFormRouter,
+        navigationOptions: {
+            tabBarLabel: '电影搜索',
+            tabBarIcon: ({tintColor}) => {
+                let icon = tintColor !== 'yellow'
+                    ? icons.search
+                    : icons.searchActive;
+                return <Image source={{
+                    uri: icon
+                }} style={{
+                  width:100,
+                  height:100
+                }} />
             }
         }
     }
