@@ -70,7 +70,7 @@ export default class USAMovie extends Component {
         }
         return (
             <View style={styles.container}>
-                <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}/>
+                <ListView dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)} removeClippedSubviews={false}/>
             </View>
         );
     }

@@ -1,4 +1,5 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet,Dimensions} from 'react-native';
+let width = Dimensions.get('window').width
 export const styles = StyleSheet.create({
   loadingMore:{
     marginVertical:20

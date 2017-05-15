@@ -1,3 +1,4 @@
+
 import React,{Component} from 'react';
 import {styles} from '../styles/Main';
 import {
@@ -7,11 +8,11 @@ import {
     ListView,
     ScrollView,
     StatusBar,
+    button,
     ActivityIndicator,  //加载时的转动圆圈
     TouchableHighlight, //按下时，封装的视图的不透明度会降低(只支持一个子节点)
     RefreshControl,
 } from 'react-native';
-
 export default class ChinaMovie extends Component {
     constructor(props) {
         super(props);
@@ -111,7 +112,7 @@ export default class ChinaMovie extends Component {
         if (!this.state.loaded){
           return (
             <View style={styles.container}>
-                <StatusBar backgroundColor='#4659bf'/>
+                <StatusBar backgroundColor='transparent'/>
                 <View style={styles.loading}>
                   <ActivityIndicator size="large" color="#6435c9"/>
                 </View>
@@ -122,6 +123,7 @@ export default class ChinaMovie extends Component {
             <View style={styles.container}>
                 <StatusBar backgroundColor='#4659bf'/>
                 <ListView
+                  removeClippedSubviews={false}
                   dataSource={this.state.movies} renderRow={this.renderMovieList.bind(this)}
                   onEndReached={this._fetchMoreData.bind(this)} //当所有的数据都已经渲染过，并且列表被滚动到距离最底部不足onEndReachedThreshold个像素的距离时调用。
                   refreshControl={
